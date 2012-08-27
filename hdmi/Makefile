@@ -7,8 +7,8 @@ TDA_TX := TDA19988
 # TDA_TX := TDA9983
 # TDA_TX := TDA9981
 
-TDA_PLATFORM := ZOOMII
-#TDA_PLATFORM := OTHERS
+# TDA_PLATFORM := ZOOMII
+TDA_PLATFORM := OTHERS
 
 ############### features on demand #################################
 

@@ -3,13 +3,13 @@ PACKAGE_NAME:=hdmi
 RULES:=compile
 
 ARCH:=arm
-CROSS_COMPILE:=arm-none-linux-gnueabi-
+CROSS_COMPILE:=/home/joel/oe-arm-angstrom-linux-gnueabi-
 VARS:= ARCH=$(ARCH) CROSS_COMPILE=$(CROSS_COMPILE)
 # VARS:= V=1 ARCH=$(ARCH) CROSS_COMPILE=$(CROSS_COMPILE)
 
 # module to be put in driver/video/hdmi
 
-LINUX_DIR=../../..
+LINUX_DIR=/home/joel/work/code/kernel/linux-dvi-audio/git/
 LINUXKERNEL_SRC=$(LINUX_DIR)
 
 all: $(RULES)
