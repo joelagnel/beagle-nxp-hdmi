@@ -31,7 +31,7 @@
 #include <linux/interrupt.h>
 #include <asm/uaccess.h>
 #include <mach/gpio.h>
-#include <mach/display.h>
+// #include <mach/display.h>
 
 /* HDMI DevLib */
 #include "tmNxCompId.h"
@@ -1787,6 +1787,8 @@ static int this_i2c_probe(struct i2c_client *client, const struct i2c_device_id 
    tda_instance *this=&our_instance;
    int err=0;
 
+  printk(KERN_ERR "i2c probe called.....\n");
+
    LOG(KERN_INFO,"called\n");
 
    /*
@@ -1934,7 +1936,7 @@ static struct file_operations this_cdev_fops = {
  owner:    THIS_MODULE,
  open:     this_cdev_open,
  release:  this_cdev_release,
- ioctl:    this_cdev_ioctl,
+// ioctl:    this_cdev_ioctl,
 };
 
 /*
@@ -2227,7 +2229,7 @@ static int __init tx_init(void)
    /* 
       general device context
    */
-   init_MUTEX(&this->driver.sem);
+   sema_init(&this->driver.sem, 1);
    
    /*
      /!\ WARNING /!                                                     \

@@ -42,6 +42,12 @@
 #include "tda998x_cec.h"
 #include "tda998x_ioctl.h"
 
+#include <linux/module.h>
+#include <linux/slab.h>
+#include <linux/vt_kern.h>
+#include <asm/types.h>
+
+
 /*
  *
  * DEFINITION
@@ -444,7 +450,7 @@ static void cec_on(cec_instance *this)
    int err;
    struct task_struct *tsk = current;
 
-   disable_irq(gpio_to_irq(TDA_IRQ_CALIB));
+   // disable_irq(gpio_to_irq(TDA_IRQ_CALIB));
 
    this->cec.power = tmPowerOn;
    TRY(tmdlHdmiCecSetPowerState(this->cec.inst,this->cec.power));
@@ -477,7 +483,7 @@ static void cec_on(cec_instance *this)
 
    /* turn GPIO into IRQ */
    gpio_direction_input(TDA_IRQ_CALIB);
-   enable_irq(gpio_to_irq(TDA_IRQ_CALIB));
+   // enable_irq(gpio_to_irq(TDA_IRQ_CALIB));
 
    LOG(KERN_INFO,"standby --> on\n");
 
@@ -1908,7 +1914,7 @@ static int __devinit this_i2c_probe(struct i2c_client *client, const struct i2c_
       printk(KERN_ERR "hdmicec:%s:cannot use GPIO 107\n",__func__);
       goto i2c_out;
    }
-   /* turn GPIO into IRQ */
+   /* turn GPIO into IRQ
    gpio_direction_input(TDA_IRQ_CALIB);
    msleep(1);
    if (request_irq(gpio_to_irq(TDA_IRQ_CALIB), \
@@ -1917,6 +1923,7 @@ static int __devinit this_i2c_probe(struct i2c_client *client, const struct i2c_
       gpio_free(TDA_IRQ_CALIB);
       goto i2c_out;
    }
+   */
 #endif
 
    err = hdmi_cec_init(this);
@@ -1925,9 +1932,9 @@ static int __devinit this_i2c_probe(struct i2c_client *client, const struct i2c_
 
    if (get_hpd_status()) {
       cec_on(this);
-      disable_irq(gpio_to_irq(TDA_IRQ_CALIB));
+      // disable_irq(gpio_to_irq(TDA_IRQ_CALIB));
       cec_interrupt(NULL); /* initiate polling */
-      enable_irq(gpio_to_irq(TDA_IRQ_CALIB));
+      // enable_irq(gpio_to_irq(TDA_IRQ_CALIB));
    }
    else {
       cec_standby(this);
@@ -1989,7 +1996,7 @@ static struct file_operations this_cdev_fops = {
  owner:    THIS_MODULE,
  open:     this_cdev_open,
  release:  this_cdev_release,
- ioctl:    this_cdev_ioctl,
+// ioctl:    this_cdev_ioctl,
 };
 
 /*
@@ -2081,7 +2088,7 @@ static int __init cec_init(void)
    /* 
       general device context
    */
-   init_MUTEX(&this->driver.sem);
+   sema_init(&this->driver.sem, 1);
    this->driver.deinit_req=0;
    
    return 0;
@@ -2101,7 +2108,7 @@ static void __exit cec_exit(void)
    LOG(KERN_INFO,"called\n");
    
 #ifndef IRQ
-   free_irq(gpio_to_irq(TDA_IRQ_CALIB), NULL);
+   // free_irq(gpio_to_irq(TDA_IRQ_CALIB), NULL);
 #endif
    
    unregister_cec_interrupt();

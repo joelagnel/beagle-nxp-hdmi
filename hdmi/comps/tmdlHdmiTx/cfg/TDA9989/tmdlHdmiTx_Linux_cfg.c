@@ -69,6 +69,13 @@ unsigned char  my_i2c_data[255];
 #	include <linux/i2c.h>
 #	include <linux/delay.h>
 
+#include <linux/gfp.h>
+
+#include <linux/module.h>
+#include <linux/slab.h>
+#include <linux/vt_kern.h>
+#include <asm/types.h>
+
 /* I2C adress of the unit                                                     */
 /* Put there the I2C slave adress of the Tx transmitter IC                    */
 #define UNIT_I2C_ADDRESS_0 0x70
@@ -483,7 +490,7 @@ tmErrorCode_t tmdlHdmiTxIWSemaphoreCreate
        return TMDL_ERR_DLHDMITX_NO_RESOURCES;
     }
     
-    init_MUTEX(mutex);
+    sema_init(mutex, 1);
     *pHandle = (tmdlHdmiTxIWSemHandle_t)mutex;
 
     RETIF(pHandle == NULL, TMDL_ERR_DLHDMITX_NO_RESOURCES)
