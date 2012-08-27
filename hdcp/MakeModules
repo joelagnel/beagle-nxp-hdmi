@@ -1,0 +1,43 @@
+PACKAGE_NAME:=hdmi
+
+RULES:=compile
+
+ARCH:=arm
+CROSS_COMPILE:=arm-none-linux-gnueabi-
+VARS:= ARCH=$(ARCH) CROSS_COMPILE=$(CROSS_COMPILE)
+# VARS:= V=1 ARCH=$(ARCH) CROSS_COMPILE=$(CROSS_COMPILE)
+
+# module to be put in driver/video/hdmi
+
+LINUX_DIR=../../..
+LINUXKERNEL_SRC=$(LINUX_DIR)
+
+all: $(RULES)
+
+compile:
+	@echo "\t-----> $(PACKAGE_NAME):$@"
+	@rm -rf *.o *.ko *.mod.c .*.cmd .tmp_versions *.c.* *.h.*
+# 	@mv tda998x_version.h temp && cat temp | awk '$$2~"PATCHLEVEL" {$$3=$$3+1};{print};' >tda998x_version.h && rm temp
+	$(MAKE) -C $(LINUXKERNEL_SRC) M=`pwd` $(VARS) modules
+#	@touch $@
+
+up:
+	adb shell rm nwolc.ko
+	adb shell rmmod nwolc
+	adb push nwolc.ko nwolc.ko
+	adb shell insmod nwolc.ko
+
+strip:
+	strip -g -I elf32-little nwolc.ko -o nwolc_striped.ko
+
+clean:
+	@echo "\t-----> $(PACKAGE_NAME):$@"
+	@rm -rf *.o *.ko *.mod.c .*.cmd .tmp_versions *.c.* *.h.* *.symvers *.order
+	@if [ -e comps/tmbslTDA9989/src ]; then cd comps/tmbslTDA9989/src && rm -rf *.o *.ko *.mod.c .*.cmd .tmp_versions *.c.* *.h.*; fi
+	@if [ -e comps/tmbslTDA9984/src ]; then cd comps/tmbslTDA9984/src && rm -rf *.o *.ko *.mod.c .*.cmd .tmp_versions *.c.* *.h.*; fi
+
+	@if [ -e .compiled ]; then rm .compiled; fi
+
+# install: .install
+# .install:
+# 	cp ....
