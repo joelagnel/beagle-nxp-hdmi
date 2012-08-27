@@ -2248,7 +2248,7 @@ static int __init tx_init(void)
    
    /* sysfs_attrs */
    comm_init();
-
+   hdmi_enable();
    return 0;
 
  init_out:
